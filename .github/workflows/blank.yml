@@ -46,14 +46,12 @@ jobs:
           NEW_CONTENT="\n\nDownload the ISO here: ${DOWNLOAD_URL}"
 
           # Combine current body and new content
-          UPDATED_BODY="${CURRENT_BODY}${NEW_CONTENT}"
-
-          # Escape special characters in the body for JSON
-          JSON_BODY=$(printf "%s" "${UPDATED_BODY}" | jq -Rs .)
+          UPDATED_BODY=$(echo "${CURRENT_BODY}" | jq -Rs .)${NEW_CONTENT}"
+          
 
           # Update the release notes
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "{\"body\": ${JSON_BODY}}" \
+            -d "{\"body\": ${UPDATED_BODY}}" \
             https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}
