@@ -43,10 +43,13 @@ jobs:
 
           # Define the new content
           DOWNLOAD_URL="https://fsn1.your-objectstorage.com/os2borgerpc/borgerpc-os-images/${{ env.FILENAME }}.iso"
-          NEW_BODY="${CURRENT_BODY}\n\nDownload the ISO here: ${DOWNLOAD_URL}"
+          NEW_CONTENT="\n\nDownload the ISO here: ${DOWNLOAD_URL}"
+
+          # Combine current body and new content
+          UPDATED_BODY="${CURRENT_BODY}${NEW_CONTENT}"
 
           # Escape special characters in the body for JSON
-          JSON_BODY=$(echo "${NEW_BODY}" | jq -Rs .)
+          JSON_BODY=$(printf "%s" "${UPDATED_BODY}" | jq -Rs .)
 
           # Update the release notes
           curl -X PATCH \
