@@ -44,6 +44,10 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }} \
             | jq -r .body)
 
+          curl \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}
+
           # Define the new content
           DOWNLOAD_URL="https://fsn1.your-objectstorage.com/os2borgerpc/borgerpc-os-images/${{ env.FILENAME }}.iso"
           NEW_BODY="${CURRENT_BODY}\n\nDownload the ISO here: ${DOWNLOAD_URL}"
