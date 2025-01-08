@@ -42,10 +42,10 @@ jobs:
 
           # Define the new content
           DOWNLOAD_URL="https://fsn1.your-objectstorage.com/os2borgerpc/borgerpc-os-images/${{ env.FILENAME }}.iso"
-          NEW_CONTENT="Download the ISO here: $DOWNLOAD_URL"
+          
 
           # Update the release notes with new content appended
-          UPDATED_BODY=$(printf "%s\n\n%s" "$CURRENT_BODY" "$NEW_CONTENT" | jq -Rs .)
+          UPDATED_BODY=$(printf "%s\r\n## Download the ISO\r\n%s" "$CURRENT_BODY" "$DOWNLOAD_URL" | jq -Rs .)
 
           # Patch the release notes
           curl -X PATCH \
