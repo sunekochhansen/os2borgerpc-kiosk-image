@@ -35,7 +35,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           jq --version
-          echo ${{ github.event.release_id }}          
+          echo ${{ github.event.release.id }}          
           CURRENT_BODY=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }} \
