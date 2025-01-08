@@ -32,18 +32,28 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Append download URL to release notes
+        if: github.event_name == 'release'
         run: |
           jq --version
           echo ${{ github.event.release.id }}          
+
+          # Fetch the current release notes
           CURRENT_BODY=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }} \
             | jq -r .body)
-          echo $CURRENT_BODY
-          echo -----------------
 
-          curl \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}
+          # Define the new content
+          DOWNLOAD_URL="https://fsn1.your-objectstorage.com/os2borgerpc/borgerpc-os-images/${{ env.FILENAME }}.iso"
+          NEW_BODY="${CURRENT_BODY}\n\nDownload the ISO here: ${DOWNLOAD_URL}"
+
+          echo current: $CURRENT_BODY
+          echo new: $NEW_BODY
           
+          # Update the release notes
+          curl -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\": \"${NEW_BODY}\"}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}
