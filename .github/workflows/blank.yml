@@ -31,7 +31,6 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
 
-      # Runs a set of commands using the runners shell
       - name: Append download URL to release notes
         if: github.event_name == 'release'
         run: |
@@ -43,15 +42,14 @@ jobs:
 
           # Define the new content
           DOWNLOAD_URL="https://fsn1.your-objectstorage.com/os2borgerpc/borgerpc-os-images/${{ env.FILENAME }}.iso"
-          NEW_CONTENT="\n\nDownload the ISO here: ${DOWNLOAD_URL}"
+          NEW_CONTENT="Download the ISO here: $DOWNLOAD_URL"
 
-          # Combine current body and new content
-          UPDATED_BODY=$(echo "${CURRENT_BODY}" | jq -Rs .)${NEW_CONTENT}"
-          
+          # Update the release notes with new content appended
+          UPDATED_BODY=$(printf "%s\n\n%s" "$CURRENT_BODY" "$NEW_CONTENT" | jq -Rs .)
 
-          # Update the release notes
+          # Patch the release notes
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "{\"body\": ${UPDATED_BODY}}" \
+            -d "{\"body\": $UPDATED_BODY}" \
             https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}
